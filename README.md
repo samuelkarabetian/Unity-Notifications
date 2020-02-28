@@ -1,4 +1,4 @@
-# Unity-Message-System
+# Unity Notifications
 
 ## Instructions
 
@@ -9,3 +9,7 @@
 4. Create a Notification asset in the project panel.
 5. Drag in the NotificationStyle asset into the style field of the Notification Asset.
 6. Call <b>NotificationDisplayer.DisplayNotification()</b> and pass in your notification to display it to the screen.
+
+## Features to add
+
+* Notification background
