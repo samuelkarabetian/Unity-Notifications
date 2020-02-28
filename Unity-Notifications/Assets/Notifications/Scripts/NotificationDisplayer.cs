@@ -28,65 +28,65 @@ namespace Notifications
             _screenSize = new Vector2(Screen.width, Screen.height);
         }
 
-        public void DisplayMessage(Notification message)
+        public void DisplayNotification(Notification notification)
         {
-            StartCoroutine(DisplayMessageCoroutine(message));
+            StartCoroutine(DisplayNotificationCoroutine(notification));
         }
 
-        private IEnumerator DisplayMessageCoroutine(Notification message)
+        private IEnumerator DisplayNotificationCoroutine(Notification notification)
         {
-            yield return new WaitForSeconds(message._delayInSeconds);
+            yield return new WaitForSeconds(notification._delayInSeconds);
 
-            var messageGO = new GameObject(message.name);
-            messageGO.transform.SetParent(_canvas.transform);
-            messageGO.layer = LayerMask.NameToLayer("UI");
-            messageGO.transform.localPosition = Vector3.zero;
-            var messageRectTransform = messageGO.AddComponent<RectTransform>();
-            messageRectTransform.anchorMin = Vector2.zero;
-            messageRectTransform.anchorMax = Vector2.zero;
-            messageRectTransform.anchoredPosition = message._normalizedPosition * _screenSize;
+            var notificationGO = new GameObject(notification.name);
+            notificationGO.transform.SetParent(_canvas.transform);
+            notificationGO.layer = LayerMask.NameToLayer("UI");
+            notificationGO.transform.localPosition = Vector3.zero;
+            var notificationRectTransform = notificationGO.AddComponent<RectTransform>();
+            notificationRectTransform.anchorMin = Vector2.zero;
+            notificationRectTransform.anchorMax = Vector2.zero;
+            notificationRectTransform.anchoredPosition = notification._normalizedPosition * _screenSize;
 
-            var messageText = messageGO.AddComponent<Text>();
-            messageText.text = message._text;
-            messageText.font = message._style._font;
-            messageText.fontSize = message._style._fontSize;
-            messageText.color = message._style._textColor;
-            messageText.horizontalOverflow = HorizontalWrapMode.Overflow;
-            messageText.alignment = message._style._textAnchor;
+            var notificationText = notificationGO.AddComponent<Text>();
+            notificationText.text = notification._text;
+            notificationText.font = notification._style._font;
+            notificationText.fontSize = notification._style._fontSize;
+            notificationText.color = notification._style._textColor;
+            notificationText.horizontalOverflow = HorizontalWrapMode.Overflow;
+            notificationText.alignment = notification._style._textAnchor;
 
-            if (message._style._fadeInDuration > 0f || message._style._fadeOutDuration > 0f)
+            if (notification._style._fadeInDuration > 0f || notification._style._fadeOutDuration > 0f)
             {
-                var messageCanvasGroup = messageGO.AddComponent<CanvasGroup>();
-                messageCanvasGroup.alpha = 0f;
-                yield return StartCoroutine(FadeMessageCoroutine(messageCanvasGroup, message._style._fadeInDuration, 1f));
+                var notificationCanvasGroup = notificationGO.AddComponent<CanvasGroup>();
+                notificationCanvasGroup.alpha = 0f;
+                yield return StartCoroutine(FadeNotificationCoroutine(notificationCanvasGroup, notification._style._fadeInDuration, 1f));
 
-                yield return new WaitForSeconds(message._style._duration);
+                yield return new WaitForSeconds(notification._style._duration);
 
-                yield return StartCoroutine(FadeMessageCoroutine(messageCanvasGroup, message._style._fadeOutDuration, 0f));
+                yield return StartCoroutine(FadeNotificationCoroutine(notificationCanvasGroup, notification._style._fadeOutDuration, 0f));
             }
             else
             {
-                yield return new WaitForSeconds(message._style._duration);
+                yield return new WaitForSeconds(notification._style._duration);
             }
 
-            Destroy(messageGO);
+            Destroy(notificationGO);
         }
 
-        private IEnumerator FadeMessageCoroutine(CanvasGroup messageCanvasGroup, float fadeDuration, float targetAlpha)
+        private IEnumerator FadeNotificationCoroutine(CanvasGroup notificationCanvasGroup, float fadeDuration, float targetAlpha)
         {
             var startTime = Time.time;
             var elapsedTime = 0f;
-            var startAlpha = messageCanvasGroup.alpha;
+            var startAlpha = notificationCanvasGroup.alpha;
 
             while (elapsedTime < fadeDuration)
             {
                 elapsedTime = Time.time - startTime;
                 var percent = elapsedTime / fadeDuration;
-                messageCanvasGroup.alpha = Mathf.Lerp(startAlpha, targetAlpha, percent);
+                notificationCanvasGroup.alpha = Mathf.Lerp(startAlpha, targetAlpha, percent);
                 yield return new WaitForEndOfFrame();
             }
 
-            messageCanvasGroup.alpha = targetAlpha;
+            notificationCanvasGroup.alpha = targetAlpha;
         }
     }
 }
