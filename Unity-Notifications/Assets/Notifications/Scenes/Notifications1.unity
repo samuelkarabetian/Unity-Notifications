@@ -386,12 +386,12 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1356869210}
-        m_MethodName: DisplayMessage
+        m_MethodName: DisplayNotification
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 11400000, guid: 47887d2c6032a4a499758e3782b92b7f,
             type: 2}
-          m_ObjectArgumentAssemblyTypeName: Notification, Assembly-CSharp
+          m_ObjectArgumentAssemblyTypeName: Notifications.Notification, Assembly-CSharp
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
