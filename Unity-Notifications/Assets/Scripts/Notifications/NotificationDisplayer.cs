@@ -2,12 +2,11 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class MessageDisplayer : MonoBehaviour
+public class NotificationDisplayer : MonoBehaviour
 {
-    [SerializeField] private MessageDisplayerSettings _settings = null;
+    [SerializeField] private NotificationDisplayerSettings _settings = null;
     private Canvas _canvas = null;
     private CanvasScaler _canvasScaler = null;
-    private CanvasRenderer _canvasRenderer = null;
     private Vector2 _screenSize = Vector2.zero;
 
     private void Awake()
@@ -22,17 +21,17 @@ public class MessageDisplayer : MonoBehaviour
         _canvasScaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
         _canvasScaler.referenceResolution = _settings._referenceResolution;
 
-        _canvasRenderer = canvasGO.AddComponent<CanvasRenderer>();
+        canvasGO.AddComponent<CanvasRenderer>();
 
         _screenSize = new Vector2(Screen.width, Screen.height);
     }
 
-    public void DisplayMessage(Message message)
+    public void DisplayMessage(Notification message)
     {
         StartCoroutine(DisplayMessageCoroutine(message));
     }
 
-    private IEnumerator DisplayMessageCoroutine(Message message) 
+    private IEnumerator DisplayMessageCoroutine(Notification message) 
     {
         yield return new WaitForSeconds(message._delayInSeconds);
 
