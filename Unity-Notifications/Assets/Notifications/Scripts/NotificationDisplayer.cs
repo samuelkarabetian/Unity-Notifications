@@ -50,17 +50,24 @@ public class NotificationDisplayer : MonoBehaviour
         messageText.fontSize = message._style._fontSize;
         messageText.color = message._style._textColor;
         messageText.horizontalOverflow = HorizontalWrapMode.Overflow;
+        messageText.alignment = message._style._textAnchor;
 
         if (message._style._fadeInDuration > 0f || message._style._fadeOutDuration > 0f)
         {
             var messageCanvasGroup = messageGO.AddComponent<CanvasGroup>();
             messageCanvasGroup.alpha = 0f;
-            StartCoroutine(FadeMessageCoroutine(messageCanvasGroup, message._style._fadeInDuration, 1f));
+            yield return StartCoroutine(FadeMessageCoroutine(messageCanvasGroup, message._style._fadeInDuration, 1f));
 
             yield return new WaitForSeconds(message._style._duration);
 
-            StartCoroutine(FadeMessageCoroutine(messageCanvasGroup, message._style._fadeOutDuration, 0f));
+            yield return StartCoroutine(FadeMessageCoroutine(messageCanvasGroup, message._style._fadeOutDuration, 0f));
         }
+        else 
+        {
+            yield return new WaitForSeconds(message._style._duration);
+        }
+
+        Destroy(messageGO);
     }
 
     private IEnumerator FadeMessageCoroutine(CanvasGroup messageCanvasGroup, float fadeDuration, float targetAlpha) 
