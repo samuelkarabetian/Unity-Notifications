@@ -13,18 +13,7 @@ namespace Notifications
 
         private void Awake()
         {
-            var canvasGameObject = new GameObject("Message Displayer Canvas");
-            canvasGameObject.layer = LayerMask.NameToLayer("UI");
-
-            _canvas = canvasGameObject.AddComponent<Canvas>();
-            _canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-
-            _canvasScaler = canvasGameObject.AddComponent<CanvasScaler>();
-            _canvasScaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            _canvasScaler.referenceResolution = _settings._referenceResolution;
-
-            canvasGameObject.AddComponent<CanvasRenderer>();
-
+            CreateNotificationCanvas();
             _screenSize = new Vector2(Screen.width, Screen.height);
         }
 
@@ -71,6 +60,21 @@ namespace Notifications
             }
 
             notificationCanvasGroup.alpha = targetAlpha;
+        }
+
+        private void CreateNotificationCanvas() 
+        {
+            var canvasGameObject = new GameObject("Message Displayer Canvas");
+            canvasGameObject.layer = LayerMask.NameToLayer("UI");
+
+            _canvas = canvasGameObject.AddComponent<Canvas>();
+            _canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+
+            _canvasScaler = canvasGameObject.AddComponent<CanvasScaler>();
+            _canvasScaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            _canvasScaler.referenceResolution = _settings._referenceResolution;
+
+            canvasGameObject.AddComponent<CanvasRenderer>();
         }
 
         private GameObject CreateNotificationGameObject(Notification notification)
