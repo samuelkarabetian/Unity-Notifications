@@ -35,7 +35,7 @@ namespace Notifications
 
         private IEnumerator DisplayNotificationCoroutine(Notification notification)
         {
-            yield return new WaitForSeconds(notification._delayInSeconds);
+            yield return new WaitForSeconds(notification._delay);
 
             var notificationGameObject = CreateNotificationGameObject(notification);
 
@@ -44,7 +44,7 @@ namespace Notifications
 
             var notificationCanvasGroup = notificationGameObject.GetComponent<CanvasGroup>();
             yield return StartCoroutine(FadeNotificationCoroutine(notificationCanvasGroup, notification._style._fadeInDuration, 1f));
-            yield return new WaitForSeconds(notification._style._duration);
+            yield return new WaitForSeconds(notification._duration);
             yield return StartCoroutine(FadeNotificationCoroutine(notificationCanvasGroup, notification._style._fadeOutDuration, 0f));
 
             Destroy(notificationGameObject);
