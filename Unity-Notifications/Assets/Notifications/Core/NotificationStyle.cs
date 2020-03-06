@@ -16,5 +16,7 @@ namespace Notifications
         [Range(0f, 3f)] public float _fadeInDuration = 0f;
         [Tooltip("Determines how long it will take for the notification to fade out.")]
         [Range(0f, 3f)] public float _fadeOutDuration = 0f;
+        public Sprite _backgroundSprite = null;
+        public Vector2 _size = new Vector2(200f, 80f);
     }
 }

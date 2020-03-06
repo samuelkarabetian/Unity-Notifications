@@ -16,6 +16,9 @@ MonoBehaviour:
   _fontSize: 16
   _textColor: {r: 0, g: 0, b: 0, a: 1}
   _hasDuration: 0
+  _textAnchor: 4
   _duration: 1
   _fadeInDuration: 1
   _fadeOutDuration: 1
+  _backgroundSprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+  _size: {x: 160, y: 80}

@@ -37,26 +37,22 @@ namespace Notifications
         {
             yield return new WaitForSeconds(notification._delayInSeconds);
 
-            var notificationGO = new GameObject(notification.name);
-            notificationGO.transform.SetParent(_canvas.transform);
-            notificationGO.layer = LayerMask.NameToLayer("UI");
-            notificationGO.transform.localPosition = Vector3.zero;
-            var notificationRectTransform = notificationGO.AddComponent<RectTransform>();
+            var notificationGameObject = new GameObject(notification.name);
+            notificationGameObject.transform.SetParent(_canvas.transform);
+            notificationGameObject.layer = LayerMask.NameToLayer("UI");
+            notificationGameObject.transform.localPosition = Vector3.zero;
+            var notificationRectTransform = notificationGameObject.AddComponent<RectTransform>();
             notificationRectTransform.anchorMin = Vector2.zero;
             notificationRectTransform.anchorMax = Vector2.zero;
             notificationRectTransform.anchoredPosition = notification._normalizedPosition * _screenSize;
 
-            var notificationText = notificationGO.AddComponent<Text>();
-            notificationText.text = notification._text;
-            notificationText.font = notification._style._font;
-            notificationText.fontSize = notification._style._fontSize;
-            notificationText.color = notification._style._textColor;
-            notificationText.horizontalOverflow = HorizontalWrapMode.Overflow;
-            notificationText.alignment = notification._style._textAnchor;
+            AddNotificationBackgroundImage(notification, notificationGameObject);
+
+            AddNotificationText(notification, notificationGameObject);
 
             if (notification._style._fadeInDuration > 0f || notification._style._fadeOutDuration > 0f)
             {
-                var notificationCanvasGroup = notificationGO.AddComponent<CanvasGroup>();
+                var notificationCanvasGroup = notificationGameObject.AddComponent<CanvasGroup>();
                 notificationCanvasGroup.alpha = 0f;
                 yield return StartCoroutine(FadeNotificationCoroutine(notificationCanvasGroup, notification._style._fadeInDuration, 1f));
 
@@ -69,7 +65,7 @@ namespace Notifications
                 yield return new WaitForSeconds(notification._style._duration);
             }
 
-            Destroy(notificationGO);
+            Destroy(notificationGameObject);
         }
 
         private IEnumerator FadeNotificationCoroutine(CanvasGroup notificationCanvasGroup, float fadeDuration, float targetAlpha)
@@ -87,6 +83,41 @@ namespace Notifications
             }
 
             notificationCanvasGroup.alpha = targetAlpha;
+        }
+
+        private void AddNotificationBackgroundImage(Notification notification, GameObject notificationGameObject)
+        {
+            if (notification._style._backgroundSprite == null) return;
+
+            var backgroundGameObject = new GameObject("NotificationBackgroundImage");
+            backgroundGameObject.transform.SetParent(notificationGameObject.transform, true);
+            backgroundGameObject.transform.localPosition = Vector3.zero;
+            backgroundGameObject.transform.localScale = Vector3.one;
+
+            var rectTransform = backgroundGameObject.AddComponent<RectTransform>();
+            rectTransform.sizeDelta = notification._style._size;
+
+            var backgroundImage = backgroundGameObject.AddComponent<Image>();
+            backgroundImage.sprite = notification._style._backgroundSprite;
+        }
+
+        private void AddNotificationText(Notification notification, GameObject notificationGameObject)
+        {
+            var textGameObject = new GameObject("NotificationText");
+            textGameObject.transform.SetParent(notificationGameObject.transform, true);
+            textGameObject.transform.localPosition = Vector3.zero;
+            textGameObject.transform.localScale = Vector3.one;
+
+            var rectTransform = textGameObject.AddComponent<RectTransform>();
+            rectTransform.sizeDelta = notification._style._size;
+
+            var notificationText = textGameObject.AddComponent<Text>();
+            notificationText.text = notification._text;
+            notificationText.font = notification._style._font;
+            notificationText.fontSize = notification._style._fontSize;
+            notificationText.color = notification._style._textColor;
+            notificationText.horizontalOverflow = HorizontalWrapMode.Overflow;
+            notificationText.alignment = notification._style._textAnchor;
         }
     }
 }
