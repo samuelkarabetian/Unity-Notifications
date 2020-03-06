@@ -1,12 +1,25 @@
 ﻿using System.Collections;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace Notifications
 {
     public class NotificationDisplayer : MonoBehaviour
     {
+        [Header("General Settings")]
         [SerializeField] private NotificationDisplayerSettings _settings = null;
+
+        [Header("Events")]
+        [Tooltip("Gets invoked when a notification starts to fade in.")]
+        [SerializeField] private UnityEvent _onStartFadingInNotification = null;
+        [Tooltip("Gets invoked when a notification has finished fading in.")]
+        [SerializeField] private UnityEvent _onFinishedFadingInNotification = null;
+        [Tooltip("Gets invoked when a notification starts to fade out.")]
+        [SerializeField] private UnityEvent _onStartFadingOutNotification = null;
+        [Tooltip("Gets invoked when a notification has finished fading out.")]
+        [SerializeField] private UnityEvent _onFinishedFadingOutNotification = null;
+
         private Canvas _canvas = null;
         private CanvasScaler _canvasScaler = null;
         private Vector2 _screenSize = Vector2.zero;
@@ -32,9 +45,16 @@ namespace Notifications
             AddNotificationText(notification, notificationGameObject);
 
             var notificationCanvasGroup = notificationGameObject.GetComponent<CanvasGroup>();
+
+            _onStartFadingInNotification?.Invoke();
             yield return StartCoroutine(FadeNotificationCoroutine(notificationCanvasGroup, notification._style._fadeInDuration, 1f));
+            _onFinishedFadingInNotification?.Invoke();
+
             yield return new WaitForSeconds(notification._duration);
+
+            _onStartFadingOutNotification?.Invoke();
             yield return StartCoroutine(FadeNotificationCoroutine(notificationCanvasGroup, notification._style._fadeOutDuration, 0f));
+            _onFinishedFadingOutNotification?.Invoke();
 
             Destroy(notificationGameObject);
         }
