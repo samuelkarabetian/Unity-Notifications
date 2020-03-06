@@ -13,17 +13,17 @@ namespace Notifications
 
         private void Awake()
         {
-            var canvasGO = new GameObject("Message Displayer Canvas");
-            canvasGO.layer = LayerMask.NameToLayer("UI");
+            var canvasGameObject = new GameObject("Message Displayer Canvas");
+            canvasGameObject.layer = LayerMask.NameToLayer("UI");
 
-            _canvas = canvasGO.AddComponent<Canvas>();
+            _canvas = canvasGameObject.AddComponent<Canvas>();
             _canvas.renderMode = RenderMode.ScreenSpaceOverlay;
 
-            _canvasScaler = canvasGO.AddComponent<CanvasScaler>();
+            _canvasScaler = canvasGameObject.AddComponent<CanvasScaler>();
             _canvasScaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             _canvasScaler.referenceResolution = _settings._referenceResolution;
 
-            canvasGO.AddComponent<CanvasRenderer>();
+            canvasGameObject.AddComponent<CanvasRenderer>();
 
             _screenSize = new Vector2(Screen.width, Screen.height);
         }
@@ -37,39 +37,27 @@ namespace Notifications
         {
             yield return new WaitForSeconds(notification._delayInSeconds);
 
-            var notificationGameObject = new GameObject(notification.name);
-            notificationGameObject.transform.SetParent(_canvas.transform);
-            notificationGameObject.layer = LayerMask.NameToLayer("UI");
-            notificationGameObject.transform.localPosition = Vector3.zero;
-            var notificationRectTransform = notificationGameObject.AddComponent<RectTransform>();
-            notificationRectTransform.anchorMin = Vector2.zero;
-            notificationRectTransform.anchorMax = Vector2.zero;
-            notificationRectTransform.anchoredPosition = notification._normalizedPosition * _screenSize;
+            var notificationGameObject = CreateNotificationGameObject(notification);
 
             AddNotificationBackgroundImage(notification, notificationGameObject);
-
             AddNotificationText(notification, notificationGameObject);
 
-            if (notification._style._fadeInDuration > 0f || notification._style._fadeOutDuration > 0f)
-            {
-                var notificationCanvasGroup = notificationGameObject.AddComponent<CanvasGroup>();
-                notificationCanvasGroup.alpha = 0f;
-                yield return StartCoroutine(FadeNotificationCoroutine(notificationCanvasGroup, notification._style._fadeInDuration, 1f));
-
-                yield return new WaitForSeconds(notification._style._duration);
-
-                yield return StartCoroutine(FadeNotificationCoroutine(notificationCanvasGroup, notification._style._fadeOutDuration, 0f));
-            }
-            else
-            {
-                yield return new WaitForSeconds(notification._style._duration);
-            }
+            var notificationCanvasGroup = notificationGameObject.GetComponent<CanvasGroup>();
+            yield return StartCoroutine(FadeNotificationCoroutine(notificationCanvasGroup, notification._style._fadeInDuration, 1f));
+            yield return new WaitForSeconds(notification._style._duration);
+            yield return StartCoroutine(FadeNotificationCoroutine(notificationCanvasGroup, notification._style._fadeOutDuration, 0f));
 
             Destroy(notificationGameObject);
         }
 
         private IEnumerator FadeNotificationCoroutine(CanvasGroup notificationCanvasGroup, float fadeDuration, float targetAlpha)
         {
+            if (fadeDuration <= 0f)
+            {
+                notificationCanvasGroup.alpha = targetAlpha;
+                yield break;
+            }
+
             var startTime = Time.time;
             var elapsedTime = 0f;
             var startAlpha = notificationCanvasGroup.alpha;
@@ -83,6 +71,24 @@ namespace Notifications
             }
 
             notificationCanvasGroup.alpha = targetAlpha;
+        }
+
+        private GameObject CreateNotificationGameObject(Notification notification)
+        {
+            var notificationGameObject = new GameObject(notification.name);
+            notificationGameObject.transform.SetParent(_canvas.transform);
+            notificationGameObject.layer = LayerMask.NameToLayer("UI");
+            notificationGameObject.transform.localPosition = Vector3.zero;
+
+            var notificationRectTransform = notificationGameObject.AddComponent<RectTransform>();
+            notificationRectTransform.anchorMin = Vector2.zero;
+            notificationRectTransform.anchorMax = Vector2.zero;
+            notificationRectTransform.anchoredPosition = notification._normalizedPosition * _screenSize;
+
+            var notificationCanvasGroup = notificationGameObject.AddComponent<CanvasGroup>();
+            notificationCanvasGroup.alpha = 0f;
+
+            return notificationGameObject;
         }
 
         private void AddNotificationBackgroundImage(Notification notification, GameObject notificationGameObject)
